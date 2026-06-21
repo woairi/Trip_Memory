@@ -8,3 +8,7 @@ dist-ssr
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# 로컬 검증 산출물 (스크린샷 캡처용 브라우저 및 캡처 결과)
+chrome-headless-shell/
+screenshots/
