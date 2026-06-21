@@ -129,6 +129,17 @@ export async function listAllTags(): Promise<string[]> {
     .map(([t]) => t);
 }
 
+/** 위치(좌표)가 있는 기록을 날짜 오름차순(여행 경로 순)으로 반환 */
+export async function listLocatedEntries(): Promise<Entry[]> {
+  const all = await db.entries.toArray();
+  return all
+    .filter((e) => e.lat != null && e.lng != null)
+    .sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return a.createdAt - b.createdAt;
+    });
+}
+
 /** 기록별 대표(첫) 사진과 사진 개수를 반환 */
 export async function getCoverPhotos(
   entryIds: number[],

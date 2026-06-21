@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Timeline from './pages/Timeline';
 import CalendarView from './pages/CalendarView';
+import MapView from './pages/MapView';
 import EntryEditor from './pages/EntryEditor';
 import EntryDetail from './pages/EntryDetail';
 
@@ -13,6 +14,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Timeline />} />
           <Route path="/calendar" element={<CalendarView />} />
+          <Route path="/map" element={<MapView />} />
           <Route path="/entry/new" element={<EntryEditor />} />
           <Route path="/entry/:id" element={<EntryDetail />} />
           <Route path="/entry/:id/edit" element={<EntryEditor />} />

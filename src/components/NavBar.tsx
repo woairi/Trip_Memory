@@ -42,6 +42,10 @@ export default function NavBar() {
             <span aria-hidden className="text-base">🗓️</span>
             달력
           </NavLink>
+          <NavLink to="/map" className={navClass}>
+            <span aria-hidden className="text-base">🗺️</span>
+            지도
+          </NavLink>
           <NavLink to="/entry/new" className={navClass}>
             <span aria-hidden className="text-base">✏️</span>
             새 기록
