@@ -1,0 +1,23 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
+
+/* Leaflet 지도가 카드 위로 떠 보이지 않도록 z-index 조정 */
+.leaflet-container {
+  z-index: 0;
+}
