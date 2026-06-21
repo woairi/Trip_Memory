@@ -43,6 +43,18 @@ export default function EntryCard({ entry, cover, photoCount }: Props) {
             {entry.body}
           </p>
         ) : null}
+        {entry.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {entry.tags.map((t) => (
+              <span
+                key={t}
+                className="rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700"
+              >
+                #{t}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </Link>
   );

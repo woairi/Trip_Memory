@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import LocationPicker, { type LocationValue } from '../components/LocationPicker';
 import PhotoUploader, { type DraftPhoto } from '../components/PhotoUploader';
+import TagInput from '../components/TagInput';
 import {
   createEntry,
   deleteEntry,
@@ -23,6 +24,7 @@ export default function EntryEditor() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [location, setLocation] = useState<LocationValue>({ locationName: '' });
+  const [tags, setTags] = useState<string[]>([]);
   const [photos, setPhotos] = useState<DraftPhoto[]>([]);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
@@ -42,6 +44,7 @@ export default function EntryEditor() {
         lat: entry.lat,
         lng: entry.lng,
       });
+      setTags(entry.tags ?? []);
       setPhotos(
         existing.map((p) => ({
           kind: 'existing',
@@ -71,6 +74,7 @@ export default function EntryEditor() {
         locationName: location.locationName.trim() || undefined,
         lat: location.lat,
         lng: location.lng,
+        tags,
       };
       const savePhotos = photos.map((p) => ({ blob: p.blob, caption: p.caption }));
       if (isEdit) {
@@ -123,6 +127,10 @@ export default function EntryEditor() {
 
       <Field label="여행지 / 위치">
         <LocationPicker value={location} onChange={setLocation} />
+      </Field>
+
+      <Field label="태그">
+        <TagInput tags={tags} onChange={setTags} />
       </Field>
 
       <Field label="사진">

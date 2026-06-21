@@ -65,6 +65,20 @@ export default function EntryDetail() {
         </div>
       </header>
 
+      {entry.tags.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {entry.tags.map((t) => (
+            <Link
+              key={t}
+              to={`/?tag=${encodeURIComponent(t)}`}
+              className="rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 hover:bg-sky-100"
+            >
+              #{t}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
       {photos.length > 0 ? (
         <div className="space-y-3">
           {photos.map((photo) => (

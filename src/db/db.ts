@@ -9,6 +9,7 @@ export interface Entry {
   locationName?: string;
   lat?: number;
   lng?: number;
+  tags: string[]; // 태그 (예: 맛집, 미술관)
   createdAt: number;
   updatedAt: number;
 }
@@ -32,6 +33,20 @@ export class TripMemoryDB extends Dexie {
       entries: '++id, date, updatedAt',
       photos: '++id, entryId',
     });
+    // v2: 태그(다중 값 인덱스) 추가, 기존 기록에는 빈 배열 채움
+    this.version(2)
+      .stores({
+        entries: '++id, date, updatedAt, *tags',
+        photos: '++id, entryId',
+      })
+      .upgrade((tx) =>
+        tx
+          .table('entries')
+          .toCollection()
+          .modify((e: Entry) => {
+            if (!e.tags) e.tags = [];
+          }),
+      );
   }
 }
 

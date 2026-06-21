@@ -7,6 +7,7 @@ export interface EntryInput {
   locationName?: string;
   lat?: number;
   lng?: number;
+  tags: string[];
 }
 
 /** 저장할 사진 한 장 (순서는 배열 인덱스로 결정) */
@@ -86,6 +87,46 @@ export async function listEntries(): Promise<Entry[]> {
     if (a.date !== b.date) return a.date < b.date ? 1 : -1;
     return b.updatedAt - a.updatedAt;
   });
+}
+
+/**
+ * 검색어 + 태그로 기록을 필터링한다 (날짜 내림차순).
+ * - query: 제목·본문·장소·태그에 대소문자 무시 부분일치
+ * - tag: 정확히 일치하는 태그를 가진 기록만
+ */
+export async function searchEntries(
+  query: string,
+  tag?: string,
+): Promise<Entry[]> {
+  const all = await listEntries();
+  const q = query.trim().toLowerCase();
+  return all.filter((e) => {
+    if (tag && !e.tags.includes(tag)) return false;
+    if (!q) return true;
+    const haystack = [
+      e.title,
+      e.body,
+      e.locationName ?? '',
+      e.tags.join(' '),
+    ]
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(q);
+  });
+}
+
+/** 사용된 모든 태그를 빈도 내림차순으로 반환 */
+export async function listAllTags(): Promise<string[]> {
+  const all = await db.entries.toArray();
+  const counts = new Map<string, number>();
+  for (const e of all) {
+    for (const t of e.tags ?? []) {
+      counts.set(t, (counts.get(t) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([t]) => t);
 }
 
 /** 기록별 대표(첫) 사진과 사진 개수를 반환 */
