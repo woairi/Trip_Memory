@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "유럽 여행 중 매일 사진과 함께 느낌·감상·기억을 기록하는 반응형 웹 앱",
+  "description": "일상과 여행을 매일 사진과 함께 느낌·감상·기억으로 남기는 반응형 기록 웹 앱",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

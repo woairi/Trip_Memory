@@ -131,7 +131,7 @@ export default function EntryEditor() {
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-bold text-slate-800">
-        {isEdit ? '기록 편집' : '오늘의 여행 기록'}
+        {isEdit ? '기록 편집' : '오늘의 기록'}
       </h1>
 
       <Field label="날짜">
@@ -148,12 +148,12 @@ export default function EntryEditor() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="오늘을 한 줄로 (예: 몽마르뜨 언덕의 노을)"
+          placeholder="오늘을 한 줄로 (예: 오랜만에 만난 친구)"
           className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
         />
       </Field>
 
-      <Field label="여행지 / 위치">
+      <Field label="장소 / 위치">
         <LocationPicker value={location} onChange={setLocation} />
       </Field>
 
@@ -163,14 +163,14 @@ export default function EntryEditor() {
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="도시 (예: 파리)"
+            placeholder="도시 (예: 서울)"
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
           />
           <input
             type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            placeholder="나라 (예: 프랑스)"
+            placeholder="나라 (예: 대한민국)"
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
           />
         </div>

@@ -12,8 +12,8 @@ interface Props {
   onChange: (value: LocationValue) => void;
 }
 
-// 유럽 중심부 기본 좌표 (지도 펼쳤을 때 시작 위치)
-const EUROPE_CENTER: [number, number] = [48.8566, 2.3522]; // 파리
+// 기본 좌표 (지도 펼쳤을 때 시작 위치)
+const DEFAULT_CENTER: [number, number] = [37.5665, 126.978]; // 서울
 
 export default function LocationPicker({ value, onChange }: Props) {
   const hasPin = value.lat != null && value.lng != null;
@@ -25,7 +25,7 @@ export default function LocationPicker({ value, onChange }: Props) {
         type="text"
         value={value.locationName}
         onChange={(e) => onChange({ ...value, locationName: e.target.value })}
-        placeholder="여행지 / 장소 (예: 파리 에펠탑)"
+        placeholder="장소 (예: 한강공원, 파리 에펠탑)"
         className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
       />
 
@@ -51,8 +51,8 @@ export default function LocationPicker({ value, onChange }: Props) {
       {showMap ? (
         <div className="h-56 overflow-hidden rounded-xl border border-slate-200">
           <MapContainer
-            center={hasPin ? [value.lat!, value.lng!] : EUROPE_CENTER}
-            zoom={hasPin ? 13 : 4}
+            center={hasPin ? [value.lat!, value.lng!] : DEFAULT_CENTER}
+            zoom={hasPin ? 13 : 10}
             className="h-full w-full"
           >
             <TileLayer

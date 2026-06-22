@@ -209,7 +209,7 @@ export async function exportAll(): Promise<BackupFile> {
  */
 export async function importAll(data: BackupFile, replace: boolean): Promise<number> {
   if (!data || data.app !== 'trip-memory' || !Array.isArray(data.entries)) {
-    throw new Error('올바른 Trip Memory 백업 파일이 아니에요.');
+    throw new Error('올바른 백업 파일이 아니에요.');
   }
 
   // Dexie 트랜잭션 중에는 비-Dexie await(이미지 디코드)가 트랜잭션을 닫을 수 있으므로
@@ -261,7 +261,7 @@ export async function countEntries(): Promise<number> {
   return db.entries.count();
 }
 
-/** 위치(좌표)가 있는 기록을 날짜 오름차순(여행 경로 순)으로 반환 */
+/** 위치(좌표)가 있는 기록을 날짜 오름차순으로 반환 */
 export async function listLocatedEntries(): Promise<Entry[]> {
   const all = await db.entries.toArray();
   return all

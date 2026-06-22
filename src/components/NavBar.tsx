@@ -19,8 +19,8 @@ export default function NavBar() {
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-lg font-bold text-slate-800"
           >
-            <span aria-hidden>🧳</span>
-            <span>유럽 여행 기록</span>
+            <span aria-hidden>📔</span>
+            <span>나의 기록</span>
           </button>
           <div className="flex items-center gap-1">
             <button

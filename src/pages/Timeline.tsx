@@ -93,7 +93,7 @@ export default function Timeline() {
                 아직 기록이 없어요
               </p>
               <p className="mt-1 text-sm text-slate-400">
-                유럽에서의 오늘을 사진과 함께 남겨보세요.
+                오늘 하루를 사진과 함께 남겨보세요.
               </p>
             </div>
             <Link
