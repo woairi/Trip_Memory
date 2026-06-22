@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 
-/** 하루치 여행 기록(일기) */
+/** 하루치 기록(일기) — 일상·여행 공용 */
 export interface Entry {
   id?: number;
   date: string; // 'YYYY-MM-DD'
@@ -9,8 +9,8 @@ export interface Entry {
   locationName?: string;
   lat?: number;
   lng?: number;
-  city?: string; // 도시 (예: 파리)
-  country?: string; // 나라 (예: 프랑스)
+  city?: string; // 도시 (예: 서울)
+  country?: string; // 나라 (예: 대한민국)
   tags: string[]; // 태그 (예: 맛집, 미술관)
   createdAt: number;
   updatedAt: number;

@@ -11,9 +11,9 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: '유럽 여행 기록 · Trip Memory',
-        short_name: 'Trip Memory',
-        description: '매일 사진과 함께 느낌·감상·기억을 기록하는 여행 일기',
+        name: '나의 기록',
+        short_name: '나의 기록',
+        description: '일상과 여행을 매일 사진과 함께 느낌·감상·기억으로 남기는 기록 앱',
         lang: 'ko',
         theme_color: '#0ea5e9',
         background_color: '#f8fafc',

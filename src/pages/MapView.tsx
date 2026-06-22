@@ -14,7 +14,7 @@ import type { Entry } from '../db/db';
 import { listLocatedEntries } from '../db/entries';
 import { formatKoreanDate } from '../utils/date';
 
-const EUROPE_CENTER: [number, number] = [48.8566, 2.3522];
+const DEFAULT_CENTER: [number, number] = [37.5665, 126.978]; // 서울
 const ALL = '전체';
 const NO_COUNTRY = '미분류';
 const NO_CITY = '기타';
@@ -56,7 +56,7 @@ export default function MapView() {
 
   const all = entries ?? [];
 
-  // 나라별 개수 (방문 순서 유지 위해 등장 순서대로)
+  // 나라별 개수 (기록 순서 유지 위해 등장 순서대로)
   const countries = useMemo(() => {
     const order: string[] = [];
     const counts = new Map<string, number>();
@@ -129,7 +129,7 @@ export default function MapView() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-slate-800">여행 지도</h1>
+        <h1 className="text-xl font-bold text-slate-800">지도</h1>
         <span className="text-sm text-slate-400">
           위치 {filtered.length}
           {filtered.length !== entries.length ? ` / ${entries.length}` : ''}곳
@@ -178,8 +178,8 @@ export default function MapView() {
 
       <div className="h-[70vh] overflow-hidden rounded-2xl border border-slate-200">
         <MapContainer
-          center={points[0] ?? EUROPE_CENTER}
-          zoom={5}
+          center={points[0] ?? DEFAULT_CENTER}
+          zoom={10}
           className="h-full w-full"
         >
           <TileLayer
@@ -211,7 +211,7 @@ export default function MapView() {
       </div>
 
       <p className="text-center text-xs text-slate-400">
-        번호는 날짜순 방문 순서예요. 핀을 누르면 해당 기록으로 이동할 수 있어요.
+        번호는 날짜순이에요. 핀을 누르면 해당 기록으로 이동할 수 있어요.
       </p>
     </div>
   );
