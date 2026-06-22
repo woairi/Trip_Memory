@@ -12,6 +12,7 @@ import {
   type EntryInput,
 } from '../db/entries';
 import { todayISO } from '../utils/date';
+import { reverseGeocode } from '../utils/geocode';
 
 export default function EntryEditor() {
   const { id } = useParams();
@@ -24,6 +25,9 @@ export default function EntryEditor() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [location, setLocation] = useState<LocationValue>({ locationName: '' });
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [geocoding, setGeocoding] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [photos, setPhotos] = useState<DraftPhoto[]>([]);
   const [loading, setLoading] = useState(isEdit);
@@ -44,6 +48,8 @@ export default function EntryEditor() {
         lat: entry.lat,
         lng: entry.lng,
       });
+      setCity(entry.city ?? '');
+      setCountry(entry.country ?? '');
       setTags(entry.tags ?? []);
       setPhotos(
         existing.map((p) => ({
@@ -74,6 +80,8 @@ export default function EntryEditor() {
         locationName: location.locationName.trim() || undefined,
         lat: location.lat,
         lng: location.lng,
+        city: city.trim() || undefined,
+        country: country.trim() || undefined,
         tags,
       };
       const savePhotos = photos.map((p) => ({ blob: p.blob, caption: p.caption }));
@@ -86,6 +94,26 @@ export default function EntryEditor() {
       }
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleAutoFill() {
+    if (location.lat == null || location.lng == null) {
+      alert('먼저 지도에서 위치를 찍어주세요.');
+      return;
+    }
+    setGeocoding(true);
+    try {
+      const region = await reverseGeocode(location.lat, location.lng);
+      if (region.city) setCity(region.city);
+      if (region.country) setCountry(region.country);
+      if (!region.city && !region.country) {
+        alert('이 위치의 도시·나라 정보를 찾지 못했어요. 직접 입력해 주세요.');
+      }
+    } catch {
+      alert('자동 채우기를 사용할 수 없어요 (네트워크). 도시·나라를 직접 입력해 주세요.');
+    } finally {
+      setGeocoding(false);
     }
   }
 
@@ -127,6 +155,33 @@ export default function EntryEditor() {
 
       <Field label="여행지 / 위치">
         <LocationPicker value={location} onChange={setLocation} />
+      </Field>
+
+      <Field label="도시 / 나라">
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="도시 (예: 파리)"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
+          />
+          <input
+            type="text"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="나라 (예: 프랑스)"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleAutoFill}
+          disabled={geocoding}
+          className="mt-2 text-xs font-medium text-sky-600 hover:underline disabled:opacity-50"
+        >
+          {geocoding ? '불러오는 중…' : '📍 핀 위치로 도시·나라 자동 채우기'}
+        </button>
       </Field>
 
       <Field label="태그">

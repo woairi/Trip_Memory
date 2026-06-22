@@ -7,6 +7,8 @@ export interface EntryInput {
   locationName?: string;
   lat?: number;
   lng?: number;
+  city?: string;
+  country?: string;
   tags: string[];
 }
 

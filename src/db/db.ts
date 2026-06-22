@@ -9,6 +9,8 @@ export interface Entry {
   locationName?: string;
   lat?: number;
   lng?: number;
+  city?: string; // 도시 (예: 파리)
+  country?: string; // 나라 (예: 프랑스)
   tags: string[]; // 태그 (예: 맛집, 미술관)
   createdAt: number;
   updatedAt: number;
