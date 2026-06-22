@@ -22,12 +22,21 @@ export default function NavBar() {
             <span aria-hidden>🧳</span>
             <span>유럽 여행 기록</span>
           </button>
-          <button
-            onClick={() => navigate('/entry/new')}
-            className="rounded-full bg-sky-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-sky-700"
-          >
-            + 기록
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigate('/settings')}
+              aria-label="설정 · 백업"
+              className="rounded-full px-2 py-1.5 text-lg text-slate-500 transition-colors hover:bg-slate-100"
+            >
+              ⚙️
+            </button>
+            <button
+              onClick={() => navigate('/entry/new')}
+              className="rounded-full bg-sky-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-sky-700"
+            >
+              + 기록
+            </button>
+          </div>
         </div>
       </header>
 

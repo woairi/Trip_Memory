@@ -5,6 +5,7 @@ import CalendarView from './pages/CalendarView';
 import MapView from './pages/MapView';
 import EntryEditor from './pages/EntryEditor';
 import EntryDetail from './pages/EntryDetail';
+import Settings from './pages/Settings';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/" element={<Timeline />} />
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/map" element={<MapView />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/entry/new" element={<EntryEditor />} />
           <Route path="/entry/:id" element={<EntryDetail />} />
           <Route path="/entry/:id/edit" element={<EntryEditor />} />

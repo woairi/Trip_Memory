@@ -1,4 +1,5 @@
 import { db, type Entry, type Photo } from './db';
+import { blobToDataUrl, dataUrlToBlob } from '../utils/backup';
 
 export interface EntryInput {
   date: string;
@@ -129,6 +130,135 @@ export async function listAllTags(): Promise<string[]> {
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([t]) => t);
+}
+
+// ---- 백업 / 복원 ----
+
+const BACKUP_VERSION = 1;
+
+export interface BackupPhoto {
+  caption?: string;
+  order: number;
+  dataUrl: string;
+}
+
+export interface BackupEntry {
+  date: string;
+  title: string;
+  body: string;
+  locationName?: string;
+  lat?: number;
+  lng?: number;
+  city?: string;
+  country?: string;
+  tags: string[];
+  createdAt: number;
+  updatedAt: number;
+  photos: BackupPhoto[];
+}
+
+export interface BackupFile {
+  app: 'trip-memory';
+  version: number;
+  exportedAt: string;
+  entries: BackupEntry[];
+}
+
+/** 모든 기록과 사진(base64)을 백업 객체로 직렬화 */
+export async function exportAll(): Promise<BackupFile> {
+  const entries = await listEntries();
+  const out: BackupEntry[] = [];
+  for (const e of entries) {
+    const photos = await getPhotos(e.id!);
+    const backupPhotos: BackupPhoto[] = [];
+    for (const p of photos) {
+      backupPhotos.push({
+        caption: p.caption,
+        order: p.order,
+        dataUrl: await blobToDataUrl(p.blob),
+      });
+    }
+    out.push({
+      date: e.date,
+      title: e.title,
+      body: e.body,
+      locationName: e.locationName,
+      lat: e.lat,
+      lng: e.lng,
+      city: e.city,
+      country: e.country,
+      tags: e.tags ?? [],
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+      photos: backupPhotos,
+    });
+  }
+  return {
+    app: 'trip-memory',
+    version: BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    entries: out,
+  };
+}
+
+/**
+ * 백업 객체에서 기록을 복원한다.
+ * - replace=true: 기존 데이터를 모두 지우고 가져옴
+ * - replace=false: 기존 데이터에 이어서 추가
+ * 반환값: 가져온 기록 수
+ */
+export async function importAll(data: BackupFile, replace: boolean): Promise<number> {
+  if (!data || data.app !== 'trip-memory' || !Array.isArray(data.entries)) {
+    throw new Error('올바른 Trip Memory 백업 파일이 아니에요.');
+  }
+
+  // Dexie 트랜잭션 중에는 비-Dexie await(이미지 디코드)가 트랜잭션을 닫을 수 있으므로
+  // 사진 Blob 변환을 트랜잭션 시작 전에 모두 끝내 둔다.
+  const prepared = await Promise.all(
+    data.entries.map(async (be) => {
+      const entry: Entry = {
+        date: be.date,
+        title: be.title ?? '',
+        body: be.body ?? '',
+        locationName: be.locationName,
+        lat: be.lat,
+        lng: be.lng,
+        city: be.city,
+        country: be.country,
+        tags: be.tags ?? [],
+        createdAt: be.createdAt ?? Date.now(),
+        updatedAt: be.updatedAt ?? Date.now(),
+      };
+      const photos = await Promise.all(
+        (be.photos ?? []).map(async (p, i) => ({
+          blob: await dataUrlToBlob(p.dataUrl),
+          caption: p.caption,
+          order: p.order ?? i,
+        })),
+      );
+      return { entry, photos };
+    }),
+  );
+
+  await db.transaction('rw', db.entries, db.photos, async () => {
+    if (replace) {
+      await db.photos.clear();
+      await db.entries.clear();
+    }
+    for (const item of prepared) {
+      const entryId = await db.entries.add(item.entry);
+      if (item.photos.length > 0) {
+        await db.photos.bulkAdd(item.photos.map((p) => ({ ...p, entryId })));
+      }
+    }
+  });
+
+  return prepared.length;
+}
+
+/** 기록 개수 */
+export async function countEntries(): Promise<number> {
+  return db.entries.count();
 }
 
 /** 위치(좌표)가 있는 기록을 날짜 오름차순(여행 경로 순)으로 반환 */
