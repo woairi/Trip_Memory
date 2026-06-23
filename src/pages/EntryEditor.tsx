@@ -28,6 +28,9 @@ export default function EntryEditor() {
   const [city, setCity] = useState('');
   const [country, setCountry] = useState('');
   const [geocoding, setGeocoding] = useState(false);
+  const [photoGps, setPhotoGps] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
   const [tags, setTags] = useState<string[]>([]);
   const [photos, setPhotos] = useState<DraftPhoto[]>([]);
   const [loading, setLoading] = useState(isEdit);
@@ -154,6 +157,34 @@ export default function EntryEditor() {
       </Field>
 
       <Field label="장소 / 위치">
+        {photoGps ? (
+          <div className="mb-2 flex items-center justify-between gap-2 rounded-xl bg-sky-50 px-3 py-2 text-xs text-sky-700">
+            <span>📷 사진에 촬영 위치 정보가 있어요.</span>
+            <div className="flex shrink-0 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setLocation((l) => ({
+                    ...l,
+                    lat: photoGps.lat,
+                    lng: photoGps.lng,
+                  }));
+                  setPhotoGps(null);
+                }}
+                className="font-semibold underline"
+              >
+                이 위치 사용
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhotoGps(null)}
+                className="text-sky-400 hover:text-sky-600"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        ) : null}
         <LocationPicker value={location} onChange={setLocation} />
       </Field>
 
@@ -189,7 +220,11 @@ export default function EntryEditor() {
       </Field>
 
       <Field label="사진">
-        <PhotoUploader photos={photos} onChange={setPhotos} />
+        <PhotoUploader
+          photos={photos}
+          onChange={setPhotos}
+          onLocationFound={(lat, lng) => setPhotoGps({ lat, lng })}
+        />
       </Field>
 
       <Field label="느낌 · 감상 · 기억에 남는 일">

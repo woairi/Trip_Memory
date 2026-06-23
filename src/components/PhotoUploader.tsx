@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useObjectUrl } from '../hooks/useObjectUrl';
+import { readGpsFromImage } from '../utils/exif';
 import { resizeImage } from '../utils/image';
 
 /** 편집 중인 사진 한 장. 기존 사진(existing)과 새로 추가한 사진(new)을 구분한다. */
@@ -10,9 +11,11 @@ export type DraftPhoto =
 interface Props {
   photos: DraftPhoto[];
   onChange: (photos: DraftPhoto[]) => void;
+  /** 추가한 사진의 EXIF에서 촬영 위치(GPS)를 찾으면 첫 좌표를 알려준다. */
+  onLocationFound?: (lat: number, lng: number) => void;
 }
 
-export default function PhotoUploader({ photos, onChange }: Props) {
+export default function PhotoUploader({ photos, onChange, onLocationFound }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -24,11 +27,15 @@ export default function PhotoUploader({ photos, onChange }: Props) {
     try {
       const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'));
       const added: DraftPhoto[] = [];
+      let gps: { lat: number; lng: number } | null = null;
       for (const file of files) {
+        // 리사이즈는 EXIF를 지우므로 원본에서 먼저 촬영 위치를 읽는다.
+        if (!gps) gps = await readGpsFromImage(file);
         const blob = await resizeImage(file);
         added.push({ kind: 'new', blob, caption: '' });
       }
       onChange([...photos, ...added]);
+      if (gps) onLocationFound?.(gps.lat, gps.lng);
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = '';
